@@ -1,0 +1,40 @@
+(c) Hemanth Kapila
+
+This java library is a "tutorial" for Haskell iteratees[1].
+
+This was written mainly to understand how iteratees work. They seem to have
+very many complex interactions. And it is shared here only in the hope that
+some one who knew java but does not understand iteratees will be able to go
+through the code and Oleg's notes of his talk[2] as well as haskell enumerator
+library[3].
+
+
+
+Structure of the source
+There are three packages
+a. haskell.data.enumerator
+   This is the main package. It provides interfaces and classes that *look
+   like* the corresponding data types in haskell (Data.Enumerator.Internal
+   module of [3])
+b. haskell.data.enumerator.ex
+   This package provides most of the examples from [2]
+   
+c. haskell.data.utils
+   This package defines some utility classes and interfaces (like functions
+   etc). This package is relatively unimportant and is only tangential to the
+   main  topic. 
+   The interfaces are so designed that they can simulate 'lazy'
+   evaluation. However not much thought has been put into these.
+
+
+How to use it:
+Download the source code
+mvn install
+mvn javadoc:javadoc
+read the javadocs of the haskell.data.enumerator package
+
+
+
+1. http://www.haskell.org/haskellwiki/Iteratee
+2. http://okmij.org/ftp/Haskell/Iteratee/IterateeIO-talk-notes.pdf
+3. http://hackage.haskell.org/package/enumerator
