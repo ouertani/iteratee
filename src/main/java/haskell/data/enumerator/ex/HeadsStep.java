@@ -13,20 +13,14 @@ public class HeadsStep implements Step<CharBuffer,Integer> {
     public final char[] heads;
     private int i;
     private IterateeState state;
-    private String message;
+    
     public HeadsStep(char[] matches){
         heads = new char[matches.length];
         System.arraycopy(matches, 0, heads, 0, matches.length);
-        state = IterateeState.CONTINUE;
-        message = null;
+        state = IterateeState.CONTINUE;       
         i = 0;
     }
-
-    @Override
-    public String getErrorMessage() {
-        return message;
-    }
-
+ 
     @Override
     public Integer getResult() {
         return i;
@@ -56,13 +50,7 @@ public class HeadsStep implements Step<CharBuffer,Integer> {
 
     @Override
     public void reset() {
-        state = IterateeState.CONTINUE;
-        message = null;
+        state = IterateeState.CONTINUE;      
         i = 0;
     }
-    
-    
-    
-    
-
 }

@@ -11,12 +11,7 @@ import java.nio.CharBuffer;
 public class HeadStep implements Step<CharBuffer,Character> {
     private char c;
     private IterateeState state = IterateeState.CONTINUE;
-    private String msg;
 
-    @Override
-    public String getErrorMessage() {
-        return msg;
-    }
 
     @Override
     public Character getResult() {
@@ -39,8 +34,7 @@ public class HeadStep implements Step<CharBuffer,Character> {
     @Override
     public void reset() {
         this.state = IterateeState.CONTINUE;
-        this.c = '\0';
-        this.msg = null;
+        this.c = '\0';      
     }
     
     

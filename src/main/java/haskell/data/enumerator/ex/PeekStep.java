@@ -11,12 +11,7 @@ import java.nio.CharBuffer;
 public class PeekStep implements Step<CharBuffer,Character> {
     private char c;
     private IterateeState state = IterateeState.CONTINUE;
-    private String msg;
-
-    @Override
-    public String getErrorMessage() {
-        return msg;
-    }
+  
 
     @Override
     public Character getResult() {
