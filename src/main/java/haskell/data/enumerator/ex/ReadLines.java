@@ -30,7 +30,7 @@ class Terminator implements Iteratee<CharBuffer,Integer>{
 
 
     @Override
-    public Iteratee<CharBuffer, Integer> apply(Iterator<CharBuffer> stream) throws IterException {
+    public  Iteratee<CharBuffer, Integer> apply(Iterator<CharBuffer> stream) throws IterException {
         skipNewLinesBoth = skipNewLinesBoth.apply(stream);
         if(!skipNewLinesBoth.toContinue()){//skipLines is ready to yield
             n = skipNewLinesBoth.yield();

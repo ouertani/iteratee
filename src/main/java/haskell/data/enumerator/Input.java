@@ -11,15 +11,15 @@ import java.util.Iterator;
  *
  * @author slim
  */
-public interface Input<E> extends Iterator<E>{
-    
-    
-   static final Input EOF= new EOF();
-    
-   static <T> Input<T> el(T t) {
+public interface Input<E> extends Iterator<E> {
+
+    static final Input EOF = new EOF();
+
+    static <T> Input<T> el(T t) {
         return new El(t);
     }
-      /**
+
+    /**
      * An input element
      */
     public class El<E> implements Input<E> {
@@ -32,28 +32,28 @@ public interface Input<E> extends Iterator<E>{
 
         @Override
         public boolean hasNext() {
-           return true;
+            return true;
         }
 
         @Override
         public E next() {
-           return e;
+            return e;
         }
     }
 
-  
     /**
      * An end of file input
      */
     public static class EOF implements Input {
-         @Override
+
+        @Override
         public boolean hasNext() {
-           return false;
+            return false;
         }
 
         @Override
         public Object next() {
-               throw new UnsupportedOperationException("No Elm in EOF.");
+            throw new UnsupportedOperationException("No Elm when EOF.");
         }
     }
 }
