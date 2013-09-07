@@ -9,21 +9,42 @@ import me.ouertani.fn2.Iteratee;
  * @author slim
  */
 public class MaxIteratee implements Iteratee<Integer, Integer>{
+   final  Function<Input<Integer>, Iteratee<Integer, Integer>> handler;
     final Integer max;
 
     public MaxIteratee(Integer max) {
         this.max = max;
+        this.handler=handler(max);
     }
 
     public MaxIteratee() {
-        this.max= Integer.MIN_VALUE;
+        this(Integer.MIN_VALUE);
     }
     
-    
-
     @Override
     public <B> B handle(Function<Iteratee<Integer, Integer>, B> step) {
-       Function<Input<Integer>, Iteratee<Integer, Integer>> k = new Function<Input<Integer>, Iteratee<Integer, Integer>>() {
+       
+        Iteratee.Cont<Integer, Integer> stCont = new Iteratee.Cont<Integer, Integer>(handler);
+        return step.apply(stCont);
+    }
+     static Integer max(Integer a, Integer b) {
+         if(a > b) return a;
+         else return b;
+     }
+
+    @Override
+    public String toString() {
+        return "MaxIteratee{" + "max=" + max + '}';
+    }
+
+    @Override
+    public Function<Input<Integer>, Iteratee<Integer, Integer>> handler() {
+        return handler;
+    }
+     
+    
+    private Function<Input<Integer>, Iteratee<Integer, Integer>> handler(int max) {
+        return new Function<Input<Integer>, Iteratee<Integer, Integer>>() {
 
             @Override
             public Iteratee<Integer, Integer> apply(Input<Integer> e) {
@@ -44,18 +65,6 @@ public class MaxIteratee implements Iteratee<Integer, Integer>{
             }
 
         };
-        Iteratee.Cont<Integer, Integer> stCont = new Iteratee.Cont<Integer, Integer>(k);
-        return step.apply(stCont);
     }
-     static Integer max(Integer a, Integer b) {
-         if(a > b) return a;
-         else return b;
-     }
-
-    @Override
-    public String toString() {
-        return "MaxIteratee{" + "max=" + max + '}';
-    }
-     
     
 }

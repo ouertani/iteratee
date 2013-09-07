@@ -1,61 +1,79 @@
-
 package me.ouertani.fn2;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import me.ouertani.fn2.Input;
 import me.ouertani.fn2.Iteratee;
+import me.ouertani.fn2.utils.CollectionUtils;
+import me.ouertani.fn2.utils.Tuple;
 
 /**
  *
  * @author slim
  */
 public interface Enumerator<E> {
-   <A> Iteratee<E, A> apply(Iteratee<E,A> it) ;
-   
-   default <B> Input<B> run(Iteratee<E,B> it){
-       System.out.println("run it" + it);
-       switch(it.onState()){
-           case CONT :
-               return run(this.apply(it));
-           case ERROR :
-               Iteratee.Error e =(Iteratee.Error)it;
-               throw new RuntimeException(e.getMsg());
-           case Done :
-             Iteratee.Done<E,B> d =(Iteratee.Done) it;  
-             B a = d.getA();
-               System.out.println("run a"+ a);
-             
-             return Input.el(a);
-           default:
-               throw  new IllegalStateException();
-       }
-   }
-   
-   static <B> Enumerator<B> enumInput(Input<B> input) {
-       return new Enumerator<B>() {
 
-           @Override
-           public <A> Iteratee<B, A> apply(Iteratee<B, A> it) {
-              Function<Iteratee<B, A >  , A> step = new Function<Iteratee<B, A>, A>() {
+    <A> Iteratee<E, A> apply(Iteratee<E, A> it);
 
-                  @Override
-                  public A apply(Iteratee<B, A> t) {
-                   switch(t.onState()){
-                       case CONT : 
-                           Iteratee.Cont<B, A> c = (Iteratee.Cont)t;
-                           Function<Input<B>, Iteratee<B, A>> k = c.getK();
-                           Iteratee<B, A> apply = k.apply(input);
-                           return (A)apply;
-                       default: 
-                           return (A)t;
-                   }
-                  }
-              };
-              A handle = it.handle(step);
-              return (Iteratee<B, A>)handle;
-           }
-       };
-   }
+    static <E> Enumerator<E> empty() {
+        return new Enumerator<E>() {
+
+            @Override
+            public <A> Iteratee<E, A> apply(Iteratee<E, A> it) {
+                return it;
+            }
+        };
+    }
+
+    default <B> Input<B> run(Iteratee<E, B> it) {
+        System.out.println("run it" + it);
+        switch (it.onState()) {
+            case CONT:
+                return run(this.apply(it));
+            case ERROR:
+                Iteratee.Error e = (Iteratee.Error) it;
+                throw new RuntimeException(e.getMsg());
+            case Done:
+                Iteratee.Done<E, B> d = (Iteratee.Done) it;
+                B a = d.getA();
+                System.out.println("run a" + a);
+
+                return Input.el(a);
+            default:
+                throw new IllegalStateException();
+        }
+    }
+
+    static <B> Enumerator<B> enumInput(Input<B> input) {
+        return new Enumerator<B>() {
+
+            @Override
+            public <A> Iteratee<B, A> apply(Iteratee<B, A> it) {
+                Function<Iteratee<B, A>, Iteratee<B, A>> step = new Function<Iteratee<B, A>, Iteratee<B, A>>() {
+
+                    @Override
+                    public Iteratee<B, A> apply(Iteratee<B, A> t) {
+                        switch (t.onState()) {
+                            case CONT:
+                                Iteratee.Cont<B, A> c = (Iteratee.Cont) t;
+                                Function<Input<B>, Iteratee<B, A>> k = c.getK();
+                                Iteratee<B, A> apply = k.apply(input);
+                                return apply;
+                            default:
+                                return t;
+                        }
+                    }
+                };
+                Iteratee<B, A> handle = it.handle(step);
+                return handle;
+            }
+        };
+    }
 
     /**
      *
@@ -63,39 +81,75 @@ public interface Enumerator<E> {
      * @param input
      * @return
      */
-    static <B> Enumerator<B> enumInput(Input<B>[] input) {
-      
-        final Input[] in =  new Input[input.length+1];
-        System.arraycopy(input, 0, in, 0, input.length);
-        in[input.length]= Input.EOF;
-       return new Enumerator<B>() {
-           int hs =0;
-           @Override
-           public <A> Iteratee<B, A> apply(Iteratee<B, A> it) {
-              Function<Iteratee<B, A >  , A> step = new Function<Iteratee<B, A>, A>() {
+    static <B> Enumerator<B> enumInput(final Input<B>[] input) {
 
-                  @Override
-                  public A apply(Iteratee<B, A> t) {
-                      System.out.println("hs"+ hs);
-                   switch(t.onState()){
-                       case CONT : 
-                           if(hs >= in.length){
-                                return (A)t;
-                           }
-                           Iteratee.Cont<B, A> c = (Iteratee.Cont)t;
-                           Function<Input<B>, Iteratee<B, A>> k = c.getK();
-                           Iteratee<B, A> apply = k.apply(in[hs++]);
-                           return (A)apply;
-                       default: 
-                           return (A)t;
-                   }
-                  }
-              };
-              A handle = it.handle(step);
-              return (Iteratee<B, A>)handle;
-           }
-       };
-       
-   }
-   
+        switch (input.length) {
+            case 0:
+                return Enumerator.empty();
+            case 1:
+                return new Enumerator<B>() {
+                @Override
+                public <A> Iteratee<B, A> apply(Iteratee<B, A> i) {
+                    Function<Iteratee<B, A>, Iteratee<B, A>> step = new Function<Iteratee<B, A>, Iteratee<B, A>>() {
+
+                        @Override
+                        public Iteratee<B, A> apply(Iteratee<B, A> t) {
+
+                            switch (t.onState()) {
+                                case CONT:
+                                    Iteratee.Cont<B, A> c = (Iteratee.Cont) t;
+                                    Function<Input<B>, Iteratee<B, A>> k = c.getK();
+                                    Iteratee<B, A> apply = k.apply(input[0]);
+                                    return apply;
+                                default:
+                                    return t;
+                            }
+                        }
+                    };
+                    Iteratee<B, A> handle = i.handle(step);
+                    return handle;
+                }
+            ;
+
+            };
+            default:
+                // Stream<Input<B>> of = Stream.of(input);
+                List<Input<B>> of = Arrays.asList(input);
+                return new Enumerator<B>() {
+
+                    @Override
+                    public <A> Iteratee<B, A> apply(Iteratee<B, A> it) {
+                        Iteratee<B, A> enumSeq = enumSeq(of, it);
+                        return enumSeq;
+                    }
+                };
+
+        }
+
+    }
+
+    static <E, A> Iteratee<E, A> enumSeq(List<Input<E>> l, Iteratee<E, A> i) {
+        Function<Tuple<Input<E>, Iteratee<E, A>>, Iteratee<E, A>> f = new Function<Tuple<Input<E>, Iteratee<E, A>>, Iteratee<E, A>>() {
+
+            @Override
+            public Iteratee<E, A> apply(Tuple<Input<E>, Iteratee<E, A>> t) {
+                Input<E> a = t.getA();
+                Iteratee<E, A> it = t.getB();
+                switch (it.onState()) {
+                    case CONT:
+                        
+                        Function<Input<E>, Iteratee<E, A>> k = it.handler();
+                        if(k == null)   System.out.println("it Enu it "+ it);
+                        System.out.println("kkkk Enu"+ k);
+                        Iteratee<E, A> apply = k.apply(a);
+                        return apply;
+                    default:
+                        return it;
+                }
+            }
+
+        };
+        Iteratee<E, A> leftFold = CollectionUtils.leftFold(l, i, f);
+        return leftFold;
+    }
 }

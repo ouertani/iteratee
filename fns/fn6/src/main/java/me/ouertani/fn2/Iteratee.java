@@ -15,6 +15,12 @@ public interface Iteratee<E,A> {
    default StepState onState() {
        return StepState.CONT;
     }
+   
+    Function<Input<E>, Iteratee<E, A>> handler();
+  
+   default Cont<E,A> asCont(){
+       return (Cont<E,A>) this;
+   }
     
     class Done<E,A> implements  Iteratee<E,A>  {
 
@@ -53,6 +59,11 @@ public interface Iteratee<E,A> {
         public String toString() {
             return "Done{" + "a=" + a + ", input=" + input + '}';
         }
+
+        @Override
+        public Function<Input<E>, Iteratee<E, A>> handler() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
         
     }
     class Cont<E,A> implements Iteratee<E,A> {
@@ -88,6 +99,11 @@ public interface Iteratee<E,A> {
            Iteratee<E, A> s =new Iteratee.Cont(k);
            return folder.apply(s);
         }
+
+        @Override
+        public Function<Input<E>, Iteratee<E, A>> handler() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
         
         
     }
@@ -122,6 +138,11 @@ public interface Iteratee<E,A> {
         @Override
         public String toString() {
             return "Error{" + "msg=" + msg + ", input=" + input + '}';
+        }
+
+        @Override
+        public Function<Input<E>, Iteratee<E, Object>> handler() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
         
     }

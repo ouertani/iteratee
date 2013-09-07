@@ -11,6 +11,7 @@ public class ConsumeString implements Iteratee<String, String[]> {
 
     final String[] s;
     final ConsumeString self;
+    Function<Input<String>, Iteratee<String, String[]>>  handler;
 
     public ConsumeString() {
         this(new String[0]);
@@ -57,7 +58,7 @@ public class ConsumeString implements Iteratee<String, String[]> {
 //    }
     @Override
     public <B> B handle(Function<Iteratee<String, String[]>, B> step) {
-        Function<Input<String>, Iteratee<String, String[]>> k = new Function<Input<String>, Iteratee<String, String[]>>() {
+        handler = new Function<Input<String>, Iteratee<String, String[]>>() {
 
             @Override
             public Iteratee<String, String[]> apply(Input<String> e) {
@@ -77,8 +78,13 @@ public class ConsumeString implements Iteratee<String, String[]> {
             }
 
         };
-        Iteratee.Cont<String, String[]> stCont = new Iteratee.Cont<String, String[]>(k);
+        Iteratee.Cont<String, String[]> stCont = new Iteratee.Cont<String, String[]>(handler);
         return step.apply(stCont);
+    }
+
+    @Override
+    public Function<Input<String>, Iteratee<String, String[]>> handler() {
+       return handler;
     }
 
 }

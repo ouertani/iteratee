@@ -73,6 +73,9 @@ public class SumIterateeTest extends TestCase {
 //        assertEquals(expResult, result);      
 //    }
 
+    public void test() {
+        assertEquals(1, 1);
+    }
     
     
 }

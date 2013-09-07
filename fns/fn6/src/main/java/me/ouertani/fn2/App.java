@@ -9,30 +9,38 @@ public class App {
 
     public static void main(String[] args) {
   
-        Input[] in1 =  {Input.el(5),Input.el(2) };
-        Input[] in2 =  {Input.el(5),Input.el(2), Input.el(3) };
+        Input[] in1 =  {Input.el(5),Input.el(2),Input.EOF };
+        Input[] in2 =  {Input.el(1),Input.el(4), Input.el(3) , Input.EOF };
   
         Enumerator lit1 = Enumerator.enumInput(in1);
         Enumerator lit2 = Enumerator.enumInput(in2);
         
-      //  Iteratee<Integer,Integer> summer = new SumIteratee(); 
-        Iteratee<Integer,Integer> maxer = new MaxIteratee(); 
-//        Input run = lit1.run((Iteratee<Integer,?> )summer);
-//        Input run2 = lit2.run((Iteratee<Integer,?> )summer);
-        
-         Input run3 = lit1.run((Iteratee<Integer,?> )maxer);
-         Input run4 = lit2.run((Iteratee<Integer,?> )maxer); 
+        Iteratee<Integer,Integer> summer = new SumIteratee(); 
+       Iteratee<Integer,Integer> maxer = new MaxIteratee(); 
+        Input run = lit1.run(summer);
+        lit1.run(summer);
+        lit1.run(summer);
+       Input run11 = lit1.run(summer);
 //        
-//        System.out.println("run" + run);
-//        switch(run.state()){
-//            case EL : Input.El<Integer> el = (Input.El) run;
-//                System.out.println(""+el.getE());
-//                break;
-//            
-//            default:
-//                System.out.println("---------------"+run.state());
-//                
-//        }   
+       Input run2 = lit2.run(summer);
+//        
+         Input run3 = lit1.run(maxer);
+         
+         
+         Input run4 = lit2.run(maxer); 
+//        
+        System.out.println("run" + run);
+        switch(run.state()){
+            case EL : Input.El<Integer> el = (Input.El) run;
+                System.out.println(""+el.getE());
+                break;
+            
+            default:
+                System.out.println("---------------"+run.state());
+                
+        } 
+       //   lit1.run(maxer);
+        
 //        
 //        switch(run2.state()){
 //            case EL : Input.El<Integer> el = (Input.El) run2;
