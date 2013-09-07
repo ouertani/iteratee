@@ -1,6 +1,7 @@
 package me.ouertani.fn2;
 
 import java.util.Arrays;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 
 /**
@@ -36,28 +37,9 @@ public class ConsumeString implements Iteratee<String, String[]> {
         return "Consume";
     }
 
-//    public <B> B handleé(Function<Function<Input<String>, Iteratee<String>>, B> cont) {
-//       Function<Input<String>, Iteratee<String>> f =  new  Function<Input<String>, Iteratee<String>> () {
-//
-//           @Override
-//           public Iteratee<String> apply(Input<String> e) {
-//              switch (e.state()) {
-//            case EL:
-//                Input.El<String> el = (Input.El) e;
-//                String elem = el.getE();
-//                String[] copyOf = Arrays.copyOf(s, s.length + 1);
-//                copyOf[copyOf.length-1] = elem;
-//                return new ConsumeString(copyOf);
-//            default:
-//                return self;
-//        }
-//           }
-//           
-//       };
-//       return cont.apply(f);
-//    }
+
     @Override
-    public <B> B handle(Function<Iteratee<String, String[]>, B> step) {
+    public <B> Future<B> handle(Function<Iteratee<String, String[]>, Future<B>> step) {
         handler = new Function<Input<String>, Iteratee<String, String[]>>() {
 
             @Override

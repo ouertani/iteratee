@@ -1,7 +1,9 @@
 package me.ouertani.fn2;
 
+import java.util.concurrent.Future;
 import me.ouertani.fn2.utils.SumIteratee;
 import static me.ouertani.fn2.Input.InputState.EL;
+import me.ouertani.fn2.utils.FutureUtils;
 import me.ouertani.fn2.utils.MaxIteratee;
 
 
@@ -17,8 +19,8 @@ public class App {
         Enumerator lit2 = Enumerator.enumInput(in2);
         Enumerator lit3 = Enumerator.enumInput(in3);
         
-        Iteratee<Integer,Integer> summer = new SumIteratee(); 
-       Iteratee<Integer,Integer> maxer = new MaxIteratee(); 
+        Future<Iteratee<Integer,Integer>> summer = FutureUtils.toFuture(new SumIteratee()); 
+       Future<Iteratee<Integer,Integer>> maxer = FutureUtils.toFuture(new MaxIteratee()); 
         Input run = lit1.run(summer);
         lit1.run(summer);
         lit1.run(summer);

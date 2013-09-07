@@ -43,7 +43,7 @@ public interface Enumerator<E> {
 
             @Override
             public <A> Iteratee<B, A> apply(Iteratee<B, A> it) {
-                Function<Iteratee<B, A>, Future<A>> step;
+                Function<Iteratee<B, A>, Future<A>> 
                 step = new Function<Iteratee<B, A>, Future<A>>() {
 
                     @Override

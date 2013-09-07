@@ -1,5 +1,6 @@
 package me.ouertani.fn2;
 
+import java.util.concurrent.Future;
 import java.util.function.Function;
 
 /**
@@ -9,7 +10,7 @@ import java.util.function.Function;
  */
 public interface Iteratee<E, A> {
 
-    <B> B handle(Function<Iteratee<E, A>, B> step);
+    <B> Future<B> handle(Function<Iteratee<E, A>, Future<B>> step);
     
     
         default Function<Input<E>, Iteratee<E, A>> handler()
@@ -60,7 +61,7 @@ public interface Iteratee<E, A> {
         }
 
         @Override
-        public <B> B handle(Function<Iteratee<E, A>, B> folder) {
+        public <B> Future<B> handle(Function<Iteratee<E, A>, Future<B>> folder) {
             Iteratee<E, A> done = new Iteratee.Done(a, input);
             return folder.apply(done);
         }
@@ -106,7 +107,7 @@ public interface Iteratee<E, A> {
         }
 
         @Override
-        public <B> B handle(Function<Iteratee<E, A>, B> folder) {
+        public <B> Future<B> handle(Function<Iteratee<E, A>, Future<B>> folder) {
             Iteratee<E, A> s = new Iteratee.Cont(k);
             return folder.apply(s);
         }
@@ -139,7 +140,7 @@ public interface Iteratee<E, A> {
         }
 
         @Override
-        public <B> B handle(Function<Iteratee<E, Object>, B> folder) {
+        public <B> Future<B> handle(Function<Iteratee<E, Object>, Future<B>> folder) {
             Iteratee<E, Object> s = new Iteratee.Error(msg, input);
             return folder.apply(s);
         }

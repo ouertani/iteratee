@@ -22,7 +22,6 @@ public interface Enumerator<E> {
 
     static <E> Enumerator<E> empty() {
         return new Enumerator<E>() {
-
             @Override
             public <A> Iteratee<E, A> apply(Iteratee<E, A> it) {
                 return it;
@@ -62,15 +61,14 @@ public interface Enumerator<E> {
                             case CONT:
                                 Iteratee.Cont<B, A> c = (Iteratee.Cont) t;
                                 Function<Input<B>, Iteratee<B, A>> k = c.getK();
-                                Iteratee<B, A> apply = k.apply(input);
-                                return apply;
+                                return k.apply(input);
+                                
                             default:
                                 return t;
                         }
                     }
                 };
-                Iteratee<B, A> handle = it.handle(step);
-                return handle;
+               return it.handle(step);
             }
         };
     }
@@ -106,24 +104,18 @@ public interface Enumerator<E> {
                             }
                         }
                     };
-                    Iteratee<B, A> handle = i.handle(step);
-                    return handle;
+                    return i.handle(step);
                 }
-            ;
-
             };
             default:
-                // Stream<Input<B>> of = Stream.of(input);
+                
                 List<Input<B>> of = Arrays.asList(input);
                 return new Enumerator<B>() {
-
                     @Override
                     public <A> Iteratee<B, A> apply(Iteratee<B, A> it) {
-                        Iteratee<B, A> enumSeq = enumSeq(of, it);
-                        return enumSeq;
+                        return enumSeq(of, it);
                     }
                 };
-
         }
 
     }
